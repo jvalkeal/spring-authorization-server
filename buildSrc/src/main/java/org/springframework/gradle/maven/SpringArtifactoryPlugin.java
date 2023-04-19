@@ -18,6 +18,7 @@ package org.springframework.gradle.maven;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin;
 import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention;
 
@@ -49,7 +50,10 @@ public class SpringArtifactoryPlugin implements Plugin<Project> {
 						repository.setPassword(project.findProperty("artifactoryPassword"));
 					}
 				});
-				publish.defaults((defaults) -> defaults.publications("mavenJava"));
+				// Would fail if maven publish is not applied, i.e. in root project
+				project.getPlugins().withType(MavenPublishPlugin.class, mavenPublish -> {
+					publish.defaults((defaults) -> defaults.publications("mavenJava"));
+				});
 			});
 		});
 	}
